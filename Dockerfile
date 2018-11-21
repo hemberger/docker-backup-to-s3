@@ -9,9 +9,7 @@ RUN apk update \
   && apk add --no-cache libmagic \
   && pip install s3cmd \
   && mv /s3cfg /root/.s3cfg \
-  && chmod +x /start.sh \
-  && chmod +x /sync.sh \
-  && chmod +x /get.sh
+  && chmod +x /start.sh /sync.sh /get.sh
 
 ENTRYPOINT ["/start.sh"]
 CMD [""]
