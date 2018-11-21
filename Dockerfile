@@ -1,8 +1,5 @@
 FROM python:3.7-alpine3.8
 
-LABEL version="0.2"
-LABEL maintainer="Ilya Stepanov <dev@ilyastepanov.com>"
-
 COPY s3cfg start.sh sync.sh get.sh /
 
 RUN apk update \
