@@ -5,7 +5,9 @@ LABEL maintainer="Ilya Stepanov <dev@ilyastepanov.com>"
 
 COPY s3cfg start.sh sync.sh get.sh /
 
-RUN pip install s3cmd \
+RUN apk update \
+  && apk add --no-cache libmagic \
+  && pip install s3cmd \
   && mv /s3cfg /root/.s3cfg \
   && chmod +x /start.sh \
   && chmod +x /sync.sh \
