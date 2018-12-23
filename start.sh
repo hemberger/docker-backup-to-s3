@@ -6,22 +6,22 @@ set -e
 : ${SECRET_KEY:?"SECRET_KEY env variable is required"}
 : ${S3_PATH:?"S3_PATH env variable is required"}
 export DATA_PATH=${DATA_PATH:-/data/}
-CRON_SCHEDULE=${CRON_SCHEDULE:-0 1 * * *}
 
 echo "access_key=$ACCESS_KEY" >> /root/.s3cfg
 echo "secret_key=$SECRET_KEY" >> /root/.s3cfg
 
-if [[ "$1" == 'no-cron' ]]; then
-    exec /sync.sh
+echo "Job started: $(date)"
+
+if [[ "$1" == 'sync' ]]; then
+    /usr/local/bin/s3cmd sync $PARAMS "$DATA_PATH" "$S3_PATH"
 elif [[ "$1" == 'get' ]]; then
-    exec /get.sh
-elif [[ "$1" == 'delete' ]]; then
-    exec /usr/local/bin/s3cmd del -r "$S3_PATH"
+    umask 0
+    /usr/local/bin/s3cmd get -r $PARAMS  "$S3_PATH" "$DATA_PATH"
+elif [[ "$1" == 'del' ]]; then
+    /usr/local/bin/s3cmd del -r $PARAMS "$S3_PATH"
 else
-    CRON_ENV="PARAMS='$PARAMS'"
-    CRON_ENV="$CRON_ENV\nDATA_PATH='$DATA_PATH'"
-    CRON_ENV="$CRON_ENV\nS3_PATH='$S3_PATH'"
-    echo -e "$CRON_ENV\n$CRON_SCHEDULE /sync.sh" | crontab -
-    crontab -l
-    crond -f
+    echo "Unknown command: $1"
+    exit 1
 fi
+
+echo "Job finished: $(date)"
